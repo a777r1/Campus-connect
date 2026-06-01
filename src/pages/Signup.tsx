@@ -3,10 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Mail, Lock, User, ArrowRight, CalendarDays, GraduationCap } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/ui/Toast';
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { signup } = useAuth();
+  const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -15,14 +17,22 @@ export default function Signup() {
     confirmPassword: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      showToast("Passwords do not match!", "error");
+      return;
+    }
     setIsLoading(true);
-    setTimeout(() => {
-      login('student', formData.name, formData.email);
-      setIsLoading(false);
+    try {
+      await signup(formData.name, formData.email, formData.password, 'student');
+      showToast("Account created successfully!", "success");
       navigate('/');
-    }, 1000);
+    } catch (err: any) {
+      showToast(err.message || "Signup failed.", "error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

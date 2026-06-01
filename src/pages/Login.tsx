@@ -3,23 +3,34 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Mail, Lock, ArrowRight, CalendarDays, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/ui/Toast';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loginAsFacultyShortcut } = useAuth();
+  const { showToast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent, role: 'student' | 'admin' = 'student') => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      const name = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
-      login(role, name, email);
-      setIsLoading(false);
+    try {
+      await login(email, password);
+      showToast("Logged in successfully!", "success");
       navigate('/');
-    }, 1000);
+    } catch (err: any) {
+      showToast(err.message || "Invalid email or password.", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFacultyLogin = () => {
+    loginAsFacultyShortcut();
+    showToast("Faculty session active (sandbox shortcut)", "success");
+    navigate('/');
   };
 
   return (
@@ -89,7 +100,7 @@ export default function Login() {
             <p className="text-slate-500 dark:text-slate-400">Enter your credentials to access your account</p>
           </div>
 
-          <form onSubmit={(e) => handleSubmit(e)} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-2">Email Address</label>
               <div className="relative">
@@ -139,7 +150,7 @@ export default function Login() {
 
             <button 
               type="button"
-              onClick={(e) => handleSubmit(e as any, 'admin')}
+              onClick={handleFacultyLogin}
               className="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition-all flex items-center justify-center"
             >
               <ShieldCheck size={20} className="mr-2" /> Login as Faculty
