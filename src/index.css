@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  
+  /* Light Mode (Default) — Clean White + Dark Grey */
+  --color-primary: #1a1a1a;
+  --color-primary-hover: #333333;
+  --color-accent: #e0e0e0;
+  --color-surface: #f5f5f5;
+  --color-card: #ffffff;
+  --color-text-main: #1a1a1a;
+  --color-text-muted: #6b6b6b;
+  --color-border: #e0e0e0;
+}
+
+@layer base {
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body {
+    @apply bg-surface text-text-main font-sans antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+
+  /* Dark Mode Overrides */
+  html.dark {
+    --color-primary: #ffffff;
+    --color-primary-hover: #e0e0e0;
+    --color-accent: #2a2a3e;
+    --color-surface: #0d0d0d;
+    --color-card: #1a1a2e;
+    --color-text-main: #f0f0f0;
+    --color-text-muted: #9ca3af;
+    --color-border: #2a2a3e;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #999999;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background: #333333;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #555555;
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility glass {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-sm;
+}
+
+html.dark .glass {
+  background: rgba(26, 26, 46, 0.70);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+@utility premium-shadow {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), 0 4px 10px -5px rgba(0, 0, 0, 0.02);
+}
+
+html.dark .premium-shadow {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.4), 0 4px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+@utility premium-card {
+  @apply bg-card rounded-2xl border border-slate-100 premium-shadow transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+html.dark .premium-card {
+  background: var(--color-card);
+  border-color: var(--color-border);
+}
+
+/* Theme transition for smooth toggling */
+* {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-timing-function: ease;
+  transition-duration: 0ms;
+}
+
+html.transitioning * {
+  transition-duration: 300ms !important;
+}
